@@ -133,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return results.map(result => {
       result.lots = Math.floor(result.lots * adjustmentFactor);
       result.idrLoss = result.lots * (result.entryPrice - stopLoss) * 100;
+      result.totalAmount = result.lots * result.entryPrice * 100;
       return result;
     });
   }
@@ -143,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     results.forEach(result => {
       const row = document.createElement('tr');
-      
+
       const entryPriceCell = document.createElement('td');
       entryPriceCell.textContent = formatCurrency(result.entryPrice);
       
@@ -153,9 +154,35 @@ document.addEventListener('DOMContentLoaded', () => {
       const idrLossCell = document.createElement('td');
       idrLossCell.textContent = formatCurrency(result.idrLoss);
 
-      row.append(entryPriceCell, lotsCell, idrLossCell);
+      const idrTotalCell = document.createElement('td');
+      idrTotalCell.textContent = formatCurrency(result.totalAmount);
+
+      row.append(entryPriceCell, lotsCell, idrLossCell, idrTotalCell);
       resultsTableBody.appendChild(row);
     });
+
+    
+    // Display totals
+    const row = document.createElement('tr');
+
+    const entryPriceCell = document.createElement('td');
+    entryPriceCell.style.fontWeight = 'bold';
+    entryPriceCell.textContent = 'Total:'
+    
+    const lotsCell = document.createElement('td');
+    lotsCell.style.fontWeight = 'bold';
+    lotsCell.textContent = results.reduce((acc, result) => acc + result.lots, 0);
+    
+    const idrLossCell = document.createElement('td');
+    idrLossCell.style.fontWeight = 'bold';
+    idrLossCell.textContent = formatCurrency(results.reduce((acc, result) => acc + result.idrLoss, 0));
+
+    const idrTotalCell = document.createElement('td');
+    idrTotalCell.style.fontWeight = 'bold';
+    idrTotalCell.textContent = formatCurrency(results.reduce((acc, result) => acc + result.totalAmount, 0));
+
+    row.append(entryPriceCell, lotsCell, idrLossCell, idrTotalCell);
+    resultsTableBody.appendChild(row);
   }
 
   // Format IDR currency
